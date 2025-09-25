@@ -1,0 +1,18 @@
+domains=("xsum" "writingprompts" "pubmedqa" "squad" "openreview" "blog" "tweets")
+models=("llama" "deepseek" "gpt4o" "Qwen")
+operations=("create" "rewrite" "summary" "refine" "polish" "translate")
+multilens=("10" "50" "100" "200" "500")
+n_sample=2000
+device="cuda:0"
+run_feats=False
+save_feats=False
+func='ppl'
+
+for multilen in ${multilens[@]}; do
+  for domain in ${domains[@]}; do
+    echo "Testing on $domain, n_sample=$n_sample, run_feats=$run_feats, save_feats=$save_feats"
+    python detectors/ling-based/gltrppl.py --task cross-domain --dataset $domain \
+    --classifier ./detectors/ling-based/classifier/cross-domain/ppl_$domain\_n${n_sample}.pkl --multilen $multilen \
+    --n_sample $n_sample --device $device --run_feats $run_feats --save_feats $save_feats --mode test --func $func
+  done
+done
